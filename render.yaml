@@ -6,11 +6,5 @@ services:
     buildCommand: mvn -f backend/pom.xml clean package 
     startCommand: java -jar backend/target/trafic-track-backend-0.0.1-SNAPSHOT.jar 
     envVars: 
-      - key: SPRING_DATASOURCE_URL 
-        fromService: neon-postgres 
-      - key: SPRING_DATASOURCE_USERNAME 
-        fromService: neon-postgres 
-      - key: SPRING_DATASOURCE_PASSWORD 
-        fromService: neon-postgres 
       - key: APP_ENC_KEY 
         value: /O57NYDzbL6ML5Hinm/PrHEFjPjOSl9yxaQQ87rZ42k=
