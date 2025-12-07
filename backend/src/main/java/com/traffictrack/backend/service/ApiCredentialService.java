@@ -24,4 +24,9 @@ public class ApiCredentialService {
     public Optional<ApiCredential> getLatest() {
         return repository.findTopByOrderByIdDesc();
     }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void deleteAll() {
+        repository.deleteAllNative();
+    }
 }

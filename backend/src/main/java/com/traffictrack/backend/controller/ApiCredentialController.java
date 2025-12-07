@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -77,6 +78,20 @@ public class ApiCredentialController {
                     return ResponseEntity.ok(r);
                 })
                 .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteAll() {
+        try {
+            service.deleteAll();
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "All API credentials deleted successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            Map<String, String> err = new HashMap<>();
+            err.put("error", "Failed to delete credentials: " + ex.getMessage());
+            return ResponseEntity.status(500).body(err);
+        }
     }
 
     private String maskKey(String k) {

@@ -13,4 +13,4 @@ services:
       - key: SPRING_DATASOURCE_PASSWORD 
         fromService: neon-postgres 
       - key: APP_ENC_KEY 
-        value: your-production-enc-key
+        value: /O57NYDzbL6ML5Hinm/PrHEFjPjOSl9yxaQQ87rZ42k=
