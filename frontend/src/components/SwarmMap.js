@@ -1414,10 +1414,37 @@ function SwarmMap(props, ref) {
       <div aria-live="polite" aria-atomic="true" className="visually-hidden">{liveMessage}</div>
 
       {/* Snackbar for save/test feedback */}
-      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%', fontSize: '0.95rem' }} variant="filled">
-          {snackbarMsg}
-        </Alert>
+      <Snackbar 
+        open={snackbarOpen} 
+        autoHideDuration={6000} 
+        onClose={() => setSnackbarOpen(false)} 
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ zIndex: 9999, mt: 8 }}
+      >
+        <Box
+          sx={{
+            bgcolor: snackbarSeverity === 'success' ? '#4caf50' : '#f44336',
+            color: '#fff',
+            minWidth: '300px',
+            padding: '12px 24px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2
+          }}
+        >
+          <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#fff', flex: 1 }}>
+            {snackbarMsg}
+          </Typography>
+          <IconButton
+            size="small"
+            onClick={() => setSnackbarOpen(false)}
+            sx={{ color: '#fff', padding: '4px' }}
+          >
+            <span style={{ fontSize: '20px' }}>✕</span>
+          </IconButton>
+        </Box>
       </Snackbar>
 
       {/* Footer */}

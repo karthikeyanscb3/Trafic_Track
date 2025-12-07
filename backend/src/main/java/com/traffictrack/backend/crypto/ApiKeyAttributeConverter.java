@@ -11,13 +11,16 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-@Converter
+@Converter(autoApply = false)
+@Component
 public class ApiKeyAttributeConverter implements AttributeConverter<String, String> {
 
-    private static final String ENV_KEY = "APP_ENC_KEY"; // fallback raw passphrase or base64
     private static final int GCM_IV_LENGTH = 12; // 12 bytes for GCM
     private static final int GCM_TAG_LENGTH = 128; // bits
 
@@ -25,35 +28,48 @@ public class ApiKeyAttributeConverter implements AttributeConverter<String, Stri
     private final SecureRandom secureRandom = new SecureRandom();
     private static final Logger LOGGER = Logger.getLogger(ApiKeyAttributeConverter.class.getName());
 
+    // Spring will inject this value
+    @Value("${app.encryption.key:}")
+    private String encryptionKey;
+
     public ApiKeyAttributeConverter() {
-        try {
-            byte[] keyBytes = resolveKeyBytes();
-            this.keySpec = new SecretKeySpec(keyBytes, "AES");
-        } catch (Exception ex) {
-            // Do not fail the Spring bootstrap here; log and defer failure until the converter is actually used.
-            LOGGER.warning("Encryption key not available during startup. Set environment variable or system property '" + ENV_KEY + "' to enable encryption at rest.");
-            this.keySpec = null;
-        }
+        // Empty constructor - Spring will inject values after construction
     }
 
     private void ensureKey() {
         if (this.keySpec == null) {
-            throw new IllegalStateException("Encryption key not configured. Please set environment variable or system property '" + ENV_KEY + "' to a 16/24/32-byte Base64 key or a passphrase.");
+            // Lazy initialization on first use
+            try {
+                byte[] keyBytes = resolveKeyBytes();
+                this.keySpec = new SecretKeySpec(keyBytes, "AES");
+                LOGGER.info("Encryption key successfully initialized");
+            } catch (Exception ex) {
+                LOGGER.severe("Failed to initialize encryption key: " + ex.getMessage());
+                throw new IllegalStateException("Encryption key not configured properly. Check app.encryption.key property.", ex);
+            }
         }
     }
 
     private byte[] resolveKeyBytes() {
-        // Prefer environment variable, fall back to system property (useful for tests)
-        String env = System.getenv(ENV_KEY);
-        if (env == null || env.isEmpty()) {
-            env = System.getProperty(ENV_KEY);
+        // Try environment variable first
+        String key = System.getenv("APP_ENC_KEY");
+        
+        // Fall back to Spring property
+        if (key == null || key.isEmpty()) {
+            key = this.encryptionKey;
         }
-        if (env == null || env.isEmpty()) {
-            throw new IllegalStateException("Encryption key not set. Please set environment variable or system property " + ENV_KEY);
+        
+        // Fall back to system property
+        if (key == null || key.isEmpty()) {
+            key = System.getProperty("APP_ENC_KEY");
+        }
+        
+        if (key == null || key.isEmpty()) {
+            throw new IllegalStateException("Encryption key not set. Please set APP_ENC_KEY environment variable or app.encryption.key property");
         }
         // Try base64 decode first
         try {
-            byte[] decoded = Base64.getDecoder().decode(env);
+            byte[] decoded = Base64.getDecoder().decode(key);
             if (decoded.length == 16 || decoded.length == 24 || decoded.length == 32) {
                 return normalizeKey(decoded);
             }
@@ -62,7 +78,7 @@ public class ApiKeyAttributeConverter implements AttributeConverter<String, Stri
         // Not base64 - derive 32 byte key by SHA-256 of the passphrase
         try {
             MessageDigest sha = MessageDigest.getInstance("SHA-256");
-            return sha.digest(env.getBytes(StandardCharsets.UTF_8));
+            return sha.digest(key.getBytes(StandardCharsets.UTF_8));
         } catch (Exception ex) {
             throw new RuntimeException("Failed to derive encryption key", ex);
         }
