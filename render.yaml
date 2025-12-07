@@ -1,7 +1,7 @@
 services: 
   - type: web 
     name: trafictrack-prod 
-    env: java 
+    runtime: java
     plan: starter 
     buildCommand: mvn -f backend/pom.xml clean package 
     startCommand: java -jar backend/target/trafic-track-backend-0.0.1-SNAPSHOT.jar 
