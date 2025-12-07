@@ -1,10 +1,35 @@
-services: 
-  - type: web 
-    name: trafictrack-prod 
+services:
+  # Backend Service
+  - type: web
+    name: trafictrack-backend
     runtime: java
-    plan: starter 
-    buildCommand: mvn -f backend/pom.xml clean package 
-    startCommand: java -jar backend/target/trafic-track-backend-0.0.1-SNAPSHOT.jar 
-    envVars: 
-      - key: APP_ENC_KEY 
+    plan: starter
+    rootDir: backend
+    buildCommand: mvn clean package
+    startCommand: java -jar target/trafic-track-backend-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: APP_ENC_KEY
         value: /O57NYDzbL6ML5Hinm/PrHEFjPjOSl9yxaQQ87rZ42k=
+      - key: SERVER_PORT
+        value: 8081
+
+  # Frontend Service
+  - type: web
+    name: trafictrack-frontend
+    runtime: node
+    plan: starter
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npx serve -s build -l 3000
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: trafictrack-backend
+          envVarKey: RENDER_EXTERNAL_URL
