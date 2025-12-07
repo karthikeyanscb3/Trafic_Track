@@ -2,13 +2,53 @@
     --primary: #4a6fa5; --primary-dark: #3a5a85; --secondary: #166088; --accent: #4fc6e0;
     --accent-light: #7fd8ec; --background: #f5f7fa; --card-bg: #ffffff; --text: #333;
     --light-text: #666; --border: #e0e6ed; --success: #4CAF50; --warning: #FFC107; --danger: #F44336;
+    --card-radius: 12px;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 .swarm-dashboard * { box-sizing: border-box; }
 /* remove default page whitespace so the component sits at the very top */
 html, body, #root { height: 100%; margin: 0; padding: 0; }
-.swarm-dashboard { font-family: 'Roboto', sans-serif; min-height: 100vh; margin: 0; padding: 0; }
+.swarm-dashboard { 
+    font-family: 'Roboto', sans-serif; 
+    min-height: 100vh; 
+    margin: 0; 
+    padding: 16px;
+    background: var(--background);
+}
+
+/* Card-based layout for better mobile/iPad support */
+.swarm-dashboard .MuiPaper-root {
+    border-radius: var(--card-radius) !important;
+    box-shadow: var(--card-shadow) !important;
+    transition: box-shadow 0.3s ease, transform 0.1s ease;
+    background: var(--card-bg);
+}
+
+.swarm-dashboard .MuiPaper-root:hover {
+    box-shadow: var(--card-shadow-hover) !important;
+    transform: translateY(-2px);
+}
+
+/* Section containers as cards */
+.controls-panel,
+.map-container,
+.chart-container,
+.metrics-panel {
+    border-radius: var(--card-radius);
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+}
+
 .dashboard {
-    max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 300px 1fr; grid-template-rows: auto 1fr auto; grid-template-areas: "header header" "controls visualization" "metrics metrics"; gap: 20px; padding: 0;
+    max-width: 1400px; 
+    margin: 0 auto; 
+    display: grid; 
+    grid-template-columns: 320px 1fr; 
+    grid-template-rows: auto 1fr auto; 
+    grid-template-areas: "header header" "controls visualization" "metrics metrics"; 
+    gap: 16px; 
+    padding: 0;
 }
 .header { grid-area: header; background: linear-gradient(120deg, var(--primary), var(--secondary)); border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center; color: white; }
 .header h1 { font-weight: 700; font-size: 20px; }
@@ -55,8 +95,43 @@ html, body, #root { height: 100%; margin: 0; padding: 0; }
 
 .visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; border: 0; padding: 0; margin: -1px; }
 
-/* small responsive tweaks */
-@media (max-width: 1100px) { .dashboard { grid-template-columns: 1fr; grid-template-areas: "header" "controls" "visualization" "metrics"; } }
+/* Tablet/iPad landscape (1024px and below) */
+@media (max-width: 1100px) { 
+    .dashboard { 
+        grid-template-columns: 1fr; 
+        grid-template-areas: "header" "controls" "visualization" "metrics"; 
+        gap: 12px;
+    }
+    .swarm-dashboard {
+        padding: 12px;
+    }
+}
+
+/* iPad portrait and smaller tablets (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .swarm-dashboard {
+        padding: 16px;
+    }
+    
+    .swarm-dashboard .MuiPaper-root {
+        border-radius: 16px !important;
+    }
+    
+    .map-container {
+        height: 500px !important;
+        min-height: 450px !important;
+    }
+    
+    /* Two-column grid for metrics on iPad */
+    .status-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .chart-container {
+        height: 280px;
+    }
+}
 
 /* Accessibility: clear focus outlines for keyboard users */
 button:focus-visible, .MuiIconButton-root:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, .MuiSlider-thumb:focus-visible {
@@ -73,34 +148,240 @@ button:focus-visible, .MuiIconButton-root:focus-visible, input:focus-visible, te
 
 /* Ensure controls become full width on small screens */
 @media (max-width: 700px) {
-    .controls-panel { width: 100% !important; }
-    .map-container { padding: 12px; }
+    .controls-panel { 
+        width: 100% !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1200;
+        background: white;
+        overflow-y: auto;
+        max-height: 100vh;
+    }
+    .map-container { padding: 8px; }
 }
 
 /* Improve contrast on interactive elements */
 .MuiButton-containedPrimary { box-shadow: none; }
 
-/* Mobile / small-screen adjustments */
-@media (max-width: 700px) {
-    /* make the top-level padding smaller and stack content */
-    .swarm-dashboard { padding: 8px; }
+/* Mobile / small-screen adjustments (480px - 767px) */
+@media (max-width: 767px) {
+    /* Card-based mobile layout */
+    .swarm-dashboard { 
+        padding: 8px !important; 
+        overflow-x: hidden; 
+        min-height: 100vh;
+    }
+    .dashboard { 
+        padding: 0; 
+        gap: 12px;
+        grid-template-columns: 1fr;
+    }
+    
+    /* All cards get consistent styling */
+    .swarm-dashboard .MuiPaper-root {
+        border-radius: 12px !important;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* Section cards */
+    .swarm-dashboard > div > .MuiPaper-root {
+        padding: 16px !important;
+    }
+    
+    /* header adjustments - make it compact and sticky */
+    .header { 
+        padding: 10px 12px; 
+        border-radius: 8px;
+        position: sticky;
+        top: 0;
+        z-index: 1100;
+        margin-bottom: 8px;
+    }
+    .header h1 { 
+        font-size: 16px; 
+        margin: 0;
+        line-height: 1.3;
+    }
+    
     /* controls panel should take full width when visible */
-    .swarm-dashboard .MuiPaper-root { box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
-    /* make Grid Status wider and positioned near bottom center */
-    .grid-status-overlay { right: 6% !important; left: 6% !important; top: auto !important; bottom: 88px !important; max-width: 88% !important; }
+    .controls-panel { padding: 12px; }
+    .swarm-dashboard .MuiPaper-root { 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-radius: 12px;
+    }
+    
+    /* map container mobile fixes */
+    .map-container { 
+        height: 400px !important; 
+        min-height: 350px !important;
+        padding: 8px !important; 
+        border-radius: 12px;
+        margin: 0 0 12px 0;
+    }
+    #swarm-map { 
+        height: 100% !important; 
+        width: 100% !important;
+        border-radius: 8px;
+    }
+    
+    /* Grid Status displays AFTER map on mobile as a separate card */
+    .grid-status-overlay { 
+        position: relative !important;
+        right: auto !important; 
+        left: auto !important; 
+        top: auto !important; 
+        bottom: auto !important; 
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 16px !important;
+        font-size: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.1) !important;
+        margin: 0 0 12px 0 !important;
+        border-radius: 12px !important;
+    }
+    
+    /* metrics panel mobile - card style */
+    .metrics-panel { 
+        padding: 16px;
+        border-radius: 12px;
+    }
+    .status-container { 
+        grid-template-columns: 1fr; 
+        gap: 12px; 
+    }
+    
+    /* Individual metric cards */
+    .metric-card {
+        padding: 12px;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+    
+    /* chart container - card style */
+    .chart-container { 
+        height: 280px; 
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+    }
+    
     /* reduce footer footprint */
-    .app-footer { font-size: 12px; padding: 8px; }
+    .app-footer { 
+        font-size: 12px; 
+        padding: 12px;
+        border-radius: 12px 12px 0 0;
+    }
+    
     /* make vertical header compact */
     .vertical-header { display: none; }
+    
+    /* Vehicle list and controls as cards */
+    .vehicle-list,
+    .controls-section {
+        border-radius: 12px;
+        padding: 16px;
+    }
+    
     /* traffic badge smaller */
     .traffic-timer-badge { font-size: 12px; padding: 3px 6px; }
 }
 
-@media (max-width: 420px) {
-    .swarm-dashboard { padding: 6px; }
-    .grid-status-overlay { bottom: 72px !important; left: 4% !important; right: 4% !important; }
-    /* ensure map fills most of the screen - handled inline but give extra safety */
-    div[role='application'] { height: calc(60vh) !important; }
+/* Extra small mobile (320px - 479px) */
+@media (max-width: 479px) {
+    /* Tighter card layout for small phones */
+    .swarm-dashboard { 
+        padding: 4px !important; 
+    }
+    .dashboard { 
+        padding: 4px; 
+        gap: 8px; 
+    }
+    
+    /* Compact header */
+    .header { 
+        padding: 10px;
+        margin: 0 0 8px 0;
+        border-radius: 0 0 12px 12px;
+    }
+    .header h1 { 
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    /* All cards more compact */
+    .swarm-dashboard .MuiPaper-root {
+        border-radius: 10px !important;
+        margin-bottom: 8px;
+    }
+    
+    .swarm-dashboard > div > .MuiPaper-root {
+        padding: 12px !important;
+    }
+    
+    /* Map container optimized for small screens */
+    .map-container { 
+        height: 350px !important;
+        min-height: 280px !important; 
+        padding: 8px !important;
+        margin: 0 4px 8px 4px;
+        border-radius: 10px;
+    }
+    
+    /* Grid status displays as separate card after map */
+    .grid-status-overlay { 
+        position: relative !important;
+        bottom: auto !important; 
+        left: auto !important; 
+        right: auto !important; 
+        font-size: 13px !important;
+        padding: 12px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 10px !important;
+        margin: 0 4px 8px 4px !important;
+    }
+    
+    .grid-status-overlay .MuiTypography-subtitle2 {
+        font-size: 12px;
+    }
+    
+    .grid-status-overlay .MuiTypography-caption {
+        font-size: 10px;
+    }
+    
+    /* Compact metrics */
+    .metrics-panel,
+    .chart-container {
+        padding: 12px;
+    }
+    
+    .chart-container {
+        height: 240px;
+    }
+    
+    .controls-panel { padding: 8px; }
+    .metrics-panel { padding: 8px; }
+    
+    /* ensure map fills viewport properly */
+    div[role='application'] { 
+        height: 100% !important; 
+        width: 100% !important;
+    }
+    
+    /* Hide mobile menu toggle when controls are shown */
+    .swarm-dashboard .MuiIconButton-root[aria-label='Close controls'] {
+        position: fixed;
+        top: 8px;
+        right: 8px;
+        z-index: 1300;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
 }
 
 /* small utility to visually emphasize the mobile menu toggle */

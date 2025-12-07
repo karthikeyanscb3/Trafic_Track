@@ -384,24 +384,232 @@ function SwarmMap(props, ref) {
 
   // Grid Status overlay as a portal so it isn't clipped by map panes
   const gridStatusOverlay = (
-    <Paper elevation={6} className="grid-status-overlay" sx={{ position: 'fixed', zIndex: 1400, right: { xs: 12, sm: 24 }, top: { xs: 'auto', sm: 96 }, bottom: { xs: 96, sm: 'auto' }, minWidth: { xs: '88%', sm: 240 }, width: { xs: '88%', sm: 'auto' }, p: 1.5, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 6, pointerEvents: 'auto' }}>
-      <Stack direction="row" spacing={1} alignItems="center">
-        <InfoIcon color="primary" />
-        <Typography variant="subtitle2">Grid Status</Typography>
-      </Stack>
-      <Box sx={{ my: 1 }} />
-      <Stack spacing={1}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}><span>Avg. Delay (s/veh):</span><strong>{overlayMetrics.delay.toFixed(1)}</strong></Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}><span>Avg. Queue (veh):</span><strong>{overlayMetrics.queue.toFixed(1)}</strong></Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}><span>Throughput (veh/hr):</span><strong>{overlayMetrics.throughput}</strong></Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}><span>Improvement (%):</span><strong>{overlayMetrics.improvement.toFixed(1)}</strong></Box>
-      </Stack>
-      <Box sx={{ height: 1, borderBottom: '1px solid rgba(0,0,0,0.06)', my: 1 }} />
-      <Stack direction="row" spacing={1} alignItems="center">
-        <Box sx={{ width: 14, height: 14, bgcolor: '#4fc6e0', borderRadius: 1 }} /> <Typography variant="caption">Low</Typography>
-        <Box sx={{ width: 14, height: 14, bgcolor: '#f9d64f', borderRadius: 1, ml: 1 }} /> <Typography variant="caption">Med</Typography>
-        <Box sx={{ width: 14, height: 14, bgcolor: '#f97c4f', borderRadius: 1, ml: 1 }} /> <Typography variant="caption">High</Typography>
-      </Stack>
+    <Paper 
+      elevation={0} 
+      className="grid-status-overlay" 
+      sx={{ 
+        position: 'fixed', 
+        zIndex: 1400, 
+        right: { xs: 12, sm: 24 }, 
+        top: { xs: 'auto', sm: 96 }, 
+        bottom: { xs: 96, sm: 'auto' }, 
+        minWidth: { xs: '88%', sm: 260 }, 
+        width: { xs: '88%', sm: 'auto' }, 
+        borderRadius: 3,
+        overflow: 'hidden',
+        border: '1px solid rgba(0,0,0,0.08)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+        pointerEvents: 'auto',
+        background: 'white'
+      }}
+    >
+      {/* Header Section */}
+      <Box sx={{ 
+        background: 'linear-gradient(135deg, #4a6fa5 0%, #166088 100%)',
+        p: 2,
+        color: 'white'
+      }}>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Box sx={{ 
+            bgcolor: 'rgba(255,255,255,0.2)',
+            borderRadius: 1.5,
+            p: 0.8,
+            display: 'flex'
+          }}>
+            <InfoIcon sx={{ fontSize: 20 }} />
+          </Box>
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '1rem' }}>
+              Grid Status
+            </Typography>
+            <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.7rem' }}>
+              Real-time metrics
+            </Typography>
+          </Box>
+        </Stack>
+      </Box>
+
+      {/* Metrics Section */}
+      <Box sx={{ p: 2, bgcolor: '#fafbfc' }}>
+        <Stack spacing={1.5}>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            p: 1.5,
+            bgcolor: 'white',
+            borderRadius: 1.5,
+            border: '1px solid rgba(0,0,0,0.06)',
+            transition: 'all 0.2s',
+            '&:hover': {
+              boxShadow: '0 2px 8px rgba(74, 111, 165, 0.15)',
+              transform: 'translateY(-1px)'
+            }
+          }}>
+            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: '0.85rem' }}>
+              ⏱️ Avg. Delay
+            </Typography>
+            <Box sx={{ 
+              bgcolor: '#e8f4ff',
+              color: '#4a6fa5',
+              px: 1.5,
+              py: 0.5,
+              borderRadius: 1,
+              fontWeight: 700,
+              fontSize: '0.9rem'
+            }}>
+              {overlayMetrics.delay.toFixed(1)} s/veh
+            </Box>
+          </Box>
+
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            p: 1.5,
+            bgcolor: 'white',
+            borderRadius: 1.5,
+            border: '1px solid rgba(0,0,0,0.06)',
+            transition: 'all 0.2s',
+            '&:hover': {
+              boxShadow: '0 2px 8px rgba(74, 111, 165, 0.15)',
+              transform: 'translateY(-1px)'
+            }
+          }}>
+            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: '0.85rem' }}>
+              🚗 Avg. Queue
+            </Typography>
+            <Box sx={{ 
+              bgcolor: '#fff7ed',
+              color: '#ea580c',
+              px: 1.5,
+              py: 0.5,
+              borderRadius: 1,
+              fontWeight: 700,
+              fontSize: '0.9rem'
+            }}>
+              {overlayMetrics.queue.toFixed(1)} veh
+            </Box>
+          </Box>
+
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            p: 1.5,
+            bgcolor: 'white',
+            borderRadius: 1.5,
+            border: '1px solid rgba(0,0,0,0.06)',
+            transition: 'all 0.2s',
+            '&:hover': {
+              boxShadow: '0 2px 8px rgba(74, 111, 165, 0.15)',
+              transform: 'translateY(-1px)'
+            }
+          }}>
+            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: '0.85rem' }}>
+              📊 Throughput
+            </Typography>
+            <Box sx={{ 
+              bgcolor: '#f0fdf4',
+              color: '#16a34a',
+              px: 1.5,
+              py: 0.5,
+              borderRadius: 1,
+              fontWeight: 700,
+              fontSize: '0.9rem'
+            }}>
+              {overlayMetrics.throughput} veh/hr
+            </Box>
+          </Box>
+
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            p: 1.5,
+            bgcolor: 'white',
+            borderRadius: 1.5,
+            border: '1px solid rgba(0,0,0,0.06)',
+            transition: 'all 0.2s',
+            '&:hover': {
+              boxShadow: '0 2px 8px rgba(74, 111, 165, 0.15)',
+              transform: 'translateY(-1px)'
+            }
+          }}>
+            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: '0.85rem' }}>
+              📈 Improvement
+            </Typography>
+            <Box sx={{ 
+              bgcolor: '#f0f9ff',
+              color: '#0284c7',
+              px: 1.5,
+              py: 0.5,
+              borderRadius: 1,
+              fontWeight: 700,
+              fontSize: '0.9rem'
+            }}>
+              {overlayMetrics.improvement.toFixed(1)}%
+            </Box>
+          </Box>
+        </Stack>
+      </Box>
+
+      {/* Legend Section */}
+      <Box sx={{ 
+        p: 2, 
+        bgcolor: 'white',
+        borderTop: '1px solid rgba(0,0,0,0.06)'
+      }}>
+        <Typography variant="caption" sx={{ 
+          color: '#64748b', 
+          fontWeight: 600, 
+          textTransform: 'uppercase',
+          fontSize: '0.7rem',
+          letterSpacing: 0.5,
+          mb: 1,
+          display: 'block'
+        }}>
+          Traffic Density
+        </Typography>
+        <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-around">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+            <Box sx={{ 
+              width: 18, 
+              height: 18, 
+              bgcolor: '#4fc6e0', 
+              borderRadius: 1,
+              boxShadow: '0 2px 4px rgba(79, 198, 224, 0.3)'
+            }} />
+            <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569', fontSize: '0.75rem' }}>
+              Low
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+            <Box sx={{ 
+              width: 18, 
+              height: 18, 
+              bgcolor: '#f9d64f', 
+              borderRadius: 1,
+              boxShadow: '0 2px 4px rgba(249, 214, 79, 0.3)'
+            }} />
+            <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569', fontSize: '0.75rem' }}>
+              Med
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+            <Box sx={{ 
+              width: 18, 
+              height: 18, 
+              bgcolor: '#f97c4f', 
+              borderRadius: 1,
+              boxShadow: '0 2px 4px rgba(249, 124, 79, 0.3)'
+            }} />
+            <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569', fontSize: '0.75rem' }}>
+              High
+            </Typography>
+          </Box>
+        </Stack>
+      </Box>
     </Paper>
   );
 
@@ -409,56 +617,386 @@ function SwarmMap(props, ref) {
     <Box className="swarm-dashboard" sx={{ p: 2 }}>
       <Stack direction="row" spacing={2} alignItems="flex-start">
         <Box sx={{ display: { xs: showControlsMobile ? 'block' : 'none', sm: 'block' }, mr: { xs: 0, sm: 1 } }}>
-          <Paper sx={{ width: { xs: '100vw', sm: 320 }, p: 2, maxHeight: '78vh', overflow: 'auto' }} elevation={3}>
-          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-            <StorageIcon color="primary" />
-            <Typography variant="h6">Traffic API</Typography>
-          </Stack>
-
-          <Box sx={{ mt: 0 }} aria-label="Traffic API form">
-            <Typography variant="body2" sx={{ mb: 0.5 }}>API Provider</Typography>
-            <Select fullWidth value={apiProvider} onChange={e => setApiProvider(e.target.value)} size="small" sx={{ mb: 1 }} inputProps={{ 'aria-label': 'API provider' }}>
-              <MenuItem value="Google Maps Traffic API">Google Maps Traffic API</MenuItem>
-              <MenuItem value="HERE Traffic API">HERE Traffic API</MenuItem>
-              <MenuItem value="TomTom Traffic API">TomTom Traffic API</MenuItem>
-            </Select>
-            <Typography variant="body2" sx={{ mt: 1 }}>Enter your API Key</Typography>
-            <TextField type="password" placeholder={apiKeyMasked || 'Supports major traffic APIs'} value={apiKeyInput} onChange={e => setApiKeyInput(e.target.value)} fullWidth size="small" sx={{ my: 1 }} inputProps={{ 'aria-label': 'API key' }} />
-            <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-              <Button variant="contained" startIcon={<CheckIcon />} color="primary" onClick={handleTestCredential}>Test</Button>
-              <Button variant="contained" startIcon={<SaveIcon />} color="inherit" sx={{ bgcolor: '#6b7280', color: 'white' }} onClick={handleSaveCredential}>Save</Button>
+          <Paper sx={{ 
+            width: { xs: '100vw', sm: 340 }, 
+            height: 'calc(70vh + 232px)', 
+            overflowY: 'auto', 
+            overflowX: 'hidden',
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+            border: '1px solid rgba(0,0,0,0.08)',
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
+            '&::-webkit-scrollbar': { width: '8px' },
+            '&::-webkit-scrollbar-track': { background: 'transparent' },
+            '&::-webkit-scrollbar-thumb': { 
+              background: 'rgba(0,0,0,0.15)', 
+              borderRadius: '4px',
+              '&:hover': { background: 'rgba(0,0,0,0.25)' }
+            }
+          }} elevation={0}>
+          
+          {/* Traffic API Section */}
+          <Box sx={{ 
+            background: 'linear-gradient(135deg, #4a6fa5 0%, #166088 100%)',
+            p: 2,
+            mb: 2,
+            borderRadius: '12px 12px 0 0'
+          }}>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Box sx={{ 
+                bgcolor: 'rgba(255,255,255,0.2)',
+                borderRadius: 2,
+                p: 1,
+                display: 'flex'
+              }}>
+                <StorageIcon sx={{ color: 'white', fontSize: 28 }} />
+              </Box>
+              <Box>
+                <Typography variant="h6" sx={{ color: 'white', fontWeight: 700, fontSize: '1.1rem', lineHeight: 1.2 }}>
+                  Traffic API
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.75rem' }}>
+                  Configure data source
+                </Typography>
+              </Box>
             </Stack>
           </Box>
 
-          <Box sx={{ height: 1, borderBottom: '1px solid rgba(0,0,0,0.08)', my: 2 }} />
+          <Box sx={{ px: 2, pb: 2 }} aria-label="Traffic API form">
+            <Box sx={{ 
+              bgcolor: '#f8fafc',
+              borderRadius: 2,
+              p: 2,
+              mb: 2,
+              border: '1px solid rgba(0,0,0,0.06)'
+            }}>
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: '#1e293b', fontSize: '0.85rem' }}>
+                API Provider
+              </Typography>
+              <Select 
+                fullWidth 
+                value={apiProvider} 
+                onChange={e => setApiProvider(e.target.value)} 
+                size="small" 
+                sx={{ 
+                  mb: 1.5,
+                  bgcolor: 'white',
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,0,0,0.1)' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#4a6fa5' },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#4a6fa5', borderWidth: '2px' }
+                }} 
+                inputProps={{ 'aria-label': 'API provider' }}
+              >
+                <MenuItem value="Google Maps Traffic API">🗺️ Google Maps Traffic API</MenuItem>
+                <MenuItem value="HERE Traffic API">📍 HERE Traffic API</MenuItem>
+                <MenuItem value="TomTom Traffic API">🚗 TomTom Traffic API</MenuItem>
+              </Select>
+              
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: '#1e293b', fontSize: '0.85rem' }}>
+                API Key
+              </Typography>
+              <TextField 
+                type="password" 
+                placeholder={apiKeyMasked || 'Enter your API key'} 
+                value={apiKeyInput} 
+                onChange={e => setApiKeyInput(e.target.value)} 
+                fullWidth 
+                size="small" 
+                sx={{ 
+                  mb: 1.5,
+                  bgcolor: 'white',
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
+                    '&:hover fieldset': { borderColor: '#4a6fa5' },
+                    '&.Mui-focused fieldset': { borderColor: '#4a6fa5', borderWidth: '2px' }
+                  }
+                }} 
+                inputProps={{ 'aria-label': 'API key' }} 
+              />
+              
+              <Stack direction="row" spacing={1}>
+                <Button 
+                  variant="contained" 
+                  startIcon={<CheckIcon />} 
+                  onClick={handleTestCredential}
+                  sx={{ 
+                    flex: 1,
+                    bgcolor: '#4a6fa5',
+                    '&:hover': { bgcolor: '#3a5a85' },
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    boxShadow: '0 2px 8px rgba(74, 111, 165, 0.3)'
+                  }}
+                >
+                  Test
+                </Button>
+                <Button 
+                  variant="contained" 
+                  startIcon={<SaveIcon />} 
+                  onClick={handleSaveCredential}
+                  sx={{ 
+                    flex: 1,
+                    bgcolor: '#166088',
+                    '&:hover': { bgcolor: '#0d4a6a' },
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    boxShadow: '0 2px 8px rgba(22, 96, 136, 0.3)'
+                  }}
+                >
+                  Save
+                </Button>
+              </Stack>
+            </Box>
 
-          <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-            <MapIcon color="primary" />
-            <Typography variant="h6">Map Controls</Typography>
-          </Stack>
-          <Typography variant="body2">Search Location or Grid</Typography>
-          <TextField placeholder="e.g., Tokyo or 3,4" fullWidth size="small" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleSearchSubmit(e); }} sx={{ my: 1 }} inputProps={{ 'aria-label': 'Map search' }} />
-          <Typography variant="body2">Map Type</Typography>
-          <Select fullWidth value={mapType} onChange={e => setMapType(e.target.value)} size="small" sx={{ mb: 2 }} inputProps={{ 'aria-label': 'Map type' }}>
-            <MenuItem value="street">Street</MenuItem>
-            <MenuItem value="satellite">Satellite</MenuItem>
-            <MenuItem value="dark">Dark</MenuItem>
-          </Select>
+            {/* Map Controls Section */}
+            <Box sx={{ 
+              bgcolor: '#f8fafc',
+              borderRadius: 2,
+              p: 2,
+              mb: 2,
+              border: '1px solid rgba(0,0,0,0.06)'
+            }}>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                <Box sx={{ 
+                  bgcolor: '#e8f4ff',
+                  borderRadius: 1.5,
+                  p: 0.8,
+                  display: 'flex'
+                }}>
+                  <MapIcon sx={{ color: '#4a6fa5', fontSize: 22 }} />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1rem', color: '#1e293b' }}>
+                  Map Controls
+                </Typography>
+              </Stack>
+              
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: '#1e293b', fontSize: '0.85rem' }}>
+                Search Location or Grid
+              </Typography>
+              <TextField 
+                placeholder="e.g., Tokyo or 3,4" 
+                fullWidth 
+                size="small" 
+                value={searchQuery} 
+                onChange={e => setSearchQuery(e.target.value)} 
+                onKeyDown={e => { if (e.key === 'Enter') handleSearchSubmit(e); }} 
+                sx={{ 
+                  mb: 1.5,
+                  bgcolor: 'white',
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: 'rgba(0,0,0,0.1)' },
+                    '&:hover fieldset': { borderColor: '#4a6fa5' },
+                    '&.Mui-focused fieldset': { borderColor: '#4a6fa5', borderWidth: '2px' }
+                  }
+                }} 
+                inputProps={{ 'aria-label': 'Map search' }} 
+              />
+              
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: '#1e293b', fontSize: '0.85rem' }}>
+                Map Type
+              </Typography>
+              <Select 
+                fullWidth 
+                value={mapType} 
+                onChange={e => setMapType(e.target.value)} 
+                size="small" 
+                sx={{ 
+                  mb: 0.5,
+                  bgcolor: 'white',
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,0,0,0.1)' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#4a6fa5' },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#4a6fa5', borderWidth: '2px' }
+                }} 
+                inputProps={{ 'aria-label': 'Map type' }}
+              >
+                <MenuItem value="street">🗺️ Street View</MenuItem>
+                <MenuItem value="satellite">🛰️ Satellite</MenuItem>
+                <MenuItem value="dark">🌙 Dark Mode</MenuItem>
+              </Select>
+            </Box>
 
-          <Box sx={{ mt: 1 }}>
-            <Typography gutterBottom>Simulation Speed ({simulationSpeed}x)</Typography>
-            <Slider aria-label="Simulation speed" min={1} max={20} value={simulationSpeed} onChange={(e,v) => setSimulationSpeed(v)} />
-            <Typography gutterBottom>Vehicle Density ({carDensity})</Typography>
-            <Slider aria-label="Vehicle density" min={5} max={80} value={carDensity} onChange={(e,v) => setCarDensity(v)} />
-            <Typography gutterBottom>Swarm Size ({swarmSize})</Typography>
-            <Slider aria-label="Swarm size" min={5} max={50} value={swarmSize} onChange={(e,v) => setSwarmSize(v)} />
-          </Box>
+            {/* Simulation Settings Section */}
+            <Box sx={{ 
+              bgcolor: '#f8fafc',
+              borderRadius: 2,
+              p: 2,
+              mb: 2,
+              border: '1px solid rgba(0,0,0,0.06)'
+            }}>
+              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: '#1e293b', fontSize: '0.95rem' }}>
+                ⚙️ Simulation Settings
+              </Typography>
+              
+              <Box sx={{ mb: 2 }}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>
+                    Simulation Speed
+                  </Typography>
+                  <Box sx={{ 
+                    bgcolor: '#4a6fa5',
+                    color: 'white',
+                    px: 1.5,
+                    py: 0.3,
+                    borderRadius: 1,
+                    fontWeight: 700,
+                    fontSize: '0.8rem'
+                  }}>
+                    {simulationSpeed}x
+                  </Box>
+                </Stack>
+                <Slider 
+                  aria-label="Simulation speed" 
+                  min={1} 
+                  max={20} 
+                  value={simulationSpeed} 
+                  onChange={(e,v) => setSimulationSpeed(v)} 
+                  sx={{ 
+                    color: '#4a6fa5',
+                    '& .MuiSlider-thumb': {
+                      boxShadow: '0 2px 8px rgba(74, 111, 165, 0.3)'
+                    }
+                  }} 
+                />
+              </Box>
+              
+              <Box sx={{ mb: 2 }}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>
+                    Vehicle Density
+                  </Typography>
+                  <Box sx={{ 
+                    bgcolor: '#166088',
+                    color: 'white',
+                    px: 1.5,
+                    py: 0.3,
+                    borderRadius: 1,
+                    fontWeight: 700,
+                    fontSize: '0.8rem'
+                  }}>
+                    {carDensity}
+                  </Box>
+                </Stack>
+                <Slider 
+                  aria-label="Vehicle density" 
+                  min={5} 
+                  max={80} 
+                  value={carDensity} 
+                  onChange={(e,v) => setCarDensity(v)} 
+                  sx={{ 
+                    color: '#166088',
+                    '& .MuiSlider-thumb': {
+                      boxShadow: '0 2px 8px rgba(22, 96, 136, 0.3)'
+                    }
+                  }} 
+                />
+              </Box>
+              
+              <Box>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>
+                    Swarm Size
+                  </Typography>
+                  <Box sx={{ 
+                    bgcolor: '#4fc6e0',
+                    color: 'white',
+                    px: 1.5,
+                    py: 0.3,
+                    borderRadius: 1,
+                    fontWeight: 700,
+                    fontSize: '0.8rem'
+                  }}>
+                    {swarmSize}
+                  </Box>
+                </Stack>
+                <Slider 
+                  aria-label="Swarm size" 
+                  min={5} 
+                  max={50} 
+                  value={swarmSize} 
+                  onChange={(e,v) => setSwarmSize(v)} 
+                  sx={{ 
+                    color: '#4fc6e0',
+                    '& .MuiSlider-thumb': {
+                      boxShadow: '0 2px 8px rgba(79, 198, 224, 0.3)'
+                    }
+                  }} 
+                />
+              </Box>
+            </Box>
 
-          <Box sx={{ mt: 2, display: 'flex', gap: 1 }} role="group" aria-label="Simulation controls">
-            <IconButton color="primary" onClick={handleStart} disabled={isRunning} aria-label="Start simulation"><PlayArrowIcon /></IconButton>
-            <IconButton color="primary" onClick={handlePause} disabled={!isRunning} aria-label="Pause simulation"><PauseIcon /></IconButton>
-            <IconButton color="primary" onClick={handleReset} aria-label="Reset simulation"><RefreshIcon /></IconButton>
-            <IconButton color="primary" onClick={handleOptimize} aria-label="Optimize traffic"><BoltIcon /></IconButton>
+            {/* Control Buttons Section */}
+            <Box sx={{ 
+              bgcolor: '#f8fafc',
+              borderRadius: 2,
+              p: 2,
+              border: '1px solid rgba(0,0,0,0.06)'
+            }}>
+              <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 700, color: '#1e293b', fontSize: '0.95rem' }}>
+                🎮 Simulation Controls
+              </Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }} role="group" aria-label="Simulation controls">
+                <Button
+                  variant="contained"
+                  startIcon={<PlayArrowIcon />}
+                  onClick={handleStart}
+                  disabled={isRunning}
+                  sx={{
+                    bgcolor: '#22c55e',
+                    '&:hover': { bgcolor: '#16a34a' },
+                    '&:disabled': { bgcolor: '#cbd5e1' },
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    boxShadow: '0 2px 8px rgba(34, 197, 94, 0.3)'
+                  }}
+                >
+                  Start
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<PauseIcon />}
+                  onClick={handlePause}
+                  disabled={!isRunning}
+                  sx={{
+                    bgcolor: '#f59e0b',
+                    '&:hover': { bgcolor: '#d97706' },
+                    '&:disabled': { bgcolor: '#cbd5e1' },
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)'
+                  }}
+                >
+                  Pause
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<RefreshIcon />}
+                  onClick={handleReset}
+                  sx={{
+                    bgcolor: '#ef4444',
+                    '&:hover': { bgcolor: '#dc2626' },
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)'
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<BoltIcon />}
+                  onClick={handleOptimize}
+                  sx={{
+                    bgcolor: '#8b5cf6',
+                    '&:hover': { bgcolor: '#7c3aed' },
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    boxShadow: '0 2px 8px rgba(139, 92, 246, 0.3)'
+                  }}
+                >
+                  Optimize
+                </Button>
+              </Box>
+            </Box>
           </Box>
           </Paper>
         </Box>
@@ -483,71 +1021,394 @@ function SwarmMap(props, ref) {
         </Box>
       </Stack>
 
-  {/* Render the Grid Status overlay into a portal so it sits above map panes */}
-  {typeof document !== 'undefined' ? createPortal(gridStatusOverlay, document.body) : null}
+  {/* Render the Grid Status before Traffic and System Status on mobile, as portal on desktop */}
+  <Box sx={{ display: { xs: 'block', sm: 'none' }, mt: 2 }}>
+    {gridStatusOverlay}
+  </Box>
+  {typeof document !== 'undefined' ? createPortal(
+    <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+      {gridStatusOverlay}
+    </Box>, 
+    document.body
+  ) : null}
 
-      <Paper sx={{ mt: 2, p: 2, borderRadius: 3, bgcolor: 'background.paper' }} elevation={2}>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'stretch' }}>
-          {/* Narrow left badge + vertical title */}
-          <Box sx={{ width: 92, display: 'flex', flexDirection: 'column', alignItems: 'center', pt: 1 }}>
-            <Box sx={{ bgcolor: '#e8f6ff', borderRadius: 2, p: 1.2, mb: 1 }}>
-              <TrafficIcon sx={{ color: '#0d6efd', fontSize: 28 }} />
-            </Box>
-            <Box className="vertical-header" sx={{ textAlign: 'center', color: '#0d6efd', fontWeight: 700, lineHeight: 1.2 }}>
-              <span>Traffic</span>
-              <span>Light</span>
-              <span>Status</span>
-            </Box>
-          </Box>
-
-          {/* Middle: scrollable list with right-aligned times */}
-          <Box sx={{ width: 300, borderRight: '1px solid rgba(0,0,0,0.04)', pr: 2 }}>
-            <Box sx={{ maxHeight: 220, overflowY: 'auto' }} role="region" aria-label="Traffic light status list">
-              {trafficLights.length === 0 ? (
-                <Typography variant="body2">Initializing...</Typography>
-              ) : (
-                trafficLights.map((t, i) => (
-                  <Box key={i} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2, borderBottom: '1px dotted rgba(0,0,0,0.06)' }}>
-                    <Typography variant="body1">{t.name}</Typography>
-                    <Box className="traffic-timer-badge">{t.timeRemaining}s</Box>
-                  </Box>
-                ))
-              )}
-            </Box>
-          </Box>
-
-          {/* Right: System status area */}
-          <Box sx={{ flex: 1, pl: 3 }}>
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-              <Box sx={{ bgcolor: '#eef7ea', color: '#1e7e34', borderRadius: 2, p: 1, display: 'inline-flex' }}>
-                <ComputerIcon sx={{ color: '#1e7e34' }} />
+      {/* Traffic Light Status & System Status - Enhanced Design */}
+      <Paper sx={{ 
+        mt: 2, 
+        p: { xs: 2, sm: 3 }, 
+        borderRadius: 3, 
+        bgcolor: 'background.paper',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+        border: '1px solid rgba(0,0,0,0.05)'
+      }} elevation={0}>
+        <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 3, sm: 3 }} divider={<Box sx={{ width: { xs: '100%', md: '1px' }, height: { xs: '1px', md: 'auto' }, bgcolor: 'rgba(0,0,0,0.08)' }} />}>
+          
+          {/* Traffic Light Status Section */}
+          <Box sx={{ flex: 1 }}>
+            {/* Header */}
+            <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2.5 }}>
+              <Box sx={{ 
+                bgcolor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #e8f6ff 0%, #c3e4ff 100%)',
+                borderRadius: 2.5, 
+                p: 1.2,
+                boxShadow: '0 4px 12px rgba(13, 110, 253, 0.2)'
+              }}>
+                <TrafficIcon sx={{ color: '#0d6efd', fontSize: { xs: 26, sm: 32 } }} />
               </Box>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>System Status</Typography>
+              <Box>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    color: '#0d6efd', 
+                    fontWeight: 700,
+                    fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                    lineHeight: 1.2,
+                    mb: 0.3
+                  }}
+                >
+                  Traffic Light Status
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>
+                  Real-time intersection monitoring
+                </Typography>
+              </Box>
             </Stack>
 
-            <Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 2, borderBottom: '1px dotted rgba(0,0,0,0.06)' }}>
-                <Typography>API Service</Typography>
-                <Typography sx={{ color: '#f44336', fontWeight: 700 }}>{systemStatus.apiService}</Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 2, borderBottom: '1px dotted rgba(0,0,0,0.06)' }}>
-                <Typography>Data Refresh</Typography>
-                <Typography sx={{ color: 'primary.main', fontWeight: 600 }}>{systemStatus.dataRefresh}</Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 2, borderBottom: '1px dotted rgba(0,0,0,0.06)' }}>
-                <Typography>Map Overlay</Typography>
-                <Typography sx={{ color: 'primary.main', fontWeight: 600 }}>{systemStatus.mapOverlay}</Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 2 }}>
-                <Typography>Optimization AI</Typography>
-                <Typography sx={{ color: 'text.secondary' }}>{systemStatus.optimizationAI}</Typography>
+            {/* Traffic Lights List */}
+            <Box sx={{ 
+              bgcolor: '#f8fafb',
+              borderRadius: 2,
+              p: 2,
+              border: '1px solid rgba(0,0,0,0.05)'
+            }}>
+              <Box sx={{ 
+                maxHeight: { xs: 'auto', sm: 280 }, 
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                pr: 1,
+                '&::-webkit-scrollbar': {
+                  width: '6px'
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: 'transparent'
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: 'rgba(0,0,0,0.2)',
+                  borderRadius: '3px'
+                }
+              }} role="region" aria-label="Traffic light status list">
+                {trafficLights.length === 0 ? (
+                  <Typography variant="body2" sx={{ color: 'text.secondary', py: 3, textAlign: 'center' }}>
+                    🚦 Initializing traffic lights...
+                  </Typography>
+                ) : (
+                  <Stack spacing={1.5}>
+                    {trafficLights.map((t, i) => (
+                      <Box 
+                        key={i} 
+                        sx={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'center', 
+                          p: 1.5,
+                          bgcolor: 'white',
+                          borderRadius: 2,
+                          border: '1px solid rgba(0,0,0,0.05)',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            bgcolor: '#e8f6ff',
+                            borderColor: '#0d6efd',
+                            transform: 'translateX(4px)',
+                            boxShadow: '0 2px 8px rgba(13, 110, 253, 0.15)'
+                          }
+                        }}
+                      >
+                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                          <Box sx={{ 
+                            width: 36, 
+                            height: 36, 
+                            borderRadius: '50%', 
+                            bgcolor: '#e8f6ff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            border: '2px solid #0d6efd'
+                          }}>
+                            <TrafficIcon sx={{ fontSize: 18, color: '#0d6efd' }} />
+                          </Box>
+                          <Typography 
+                            variant="body1" 
+                            sx={{ 
+                              fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                              fontWeight: 500,
+                              color: '#1a1a1a'
+                            }}
+                          >
+                            {t.name}
+                          </Typography>
+                        </Stack>
+                        <Box 
+                          sx={{ 
+                            bgcolor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            background: 'linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%)',
+                            color: 'white',
+                            px: 2,
+                            py: 0.7,
+                            borderRadius: 2,
+                            fontWeight: 700,
+                            fontSize: { xs: '0.85rem', sm: '0.9rem' },
+                            minWidth: 55,
+                            textAlign: 'center',
+                            boxShadow: '0 2px 8px rgba(13, 110, 253, 0.3)',
+                            letterSpacing: '0.5px'
+                          }}
+                        >
+                          {t.timeRemaining}s
+                        </Box>
+                      </Box>
+                    ))}
+                  </Stack>
+                )}
               </Box>
             </Box>
           </Box>
-        </Box>
+
+          {/* System Status Section */}
+          <Box sx={{ flex: 1 }}>
+            {/* Header */}
+            <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2.5 }}>
+              <Box sx={{ 
+                background: 'linear-gradient(135deg, #eef7ea 0%, #d4edda 100%)',
+                borderRadius: 2.5, 
+                p: 1.2,
+                boxShadow: '0 4px 12px rgba(30, 126, 52, 0.2)'
+              }}>
+                <ComputerIcon sx={{ color: '#1e7e34', fontSize: { xs: 26, sm: 32 } }} />
+              </Box>
+              <Box>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    color: '#1e7e34', 
+                    fontWeight: 700,
+                    fontSize: { xs: '1.1rem', sm: '1.3rem' },
+                    lineHeight: 1.2,
+                    mb: 0.3
+                  }}
+                >
+                  System Status
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>
+                  Service health monitoring
+                </Typography>
+              </Box>
+            </Stack>
+
+            {/* Status Items */}
+            <Box sx={{ 
+              bgcolor: '#f8fafb',
+              borderRadius: 2,
+              p: 2,
+              border: '1px solid rgba(0,0,0,0.05)'
+            }}>
+              <Stack spacing={1.5}>
+                {/* API Service */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center',
+                  p: 1.5,
+                  bgcolor: 'white',
+                  borderRadius: 2,
+                  border: '1px solid rgba(0,0,0,0.05)',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    bgcolor: '#fff5f5',
+                    borderColor: '#f44336',
+                    transform: 'translateX(4px)',
+                    boxShadow: '0 2px 8px rgba(244, 67, 54, 0.15)'
+                  }
+                }}>
+                  <Stack direction="row" alignItems="center" spacing={1.5}>
+                    <Box sx={{ 
+                      width: 10, 
+                      height: 10, 
+                      borderRadius: '50%', 
+                      bgcolor: '#f44336',
+                      boxShadow: '0 0 8px rgba(244, 67, 54, 0.5)',
+                      animation: 'pulse 2s infinite'
+                    }} />
+                    <Typography sx={{ 
+                      fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                      fontWeight: 500,
+                      color: '#1a1a1a'
+                    }}>
+                      API Service
+                    </Typography>
+                  </Stack>
+                  <Box sx={{ 
+                    bgcolor: '#f44336',
+                    color: 'white',
+                    px: 2,
+                    py: 0.6,
+                    borderRadius: 2,
+                    fontWeight: 700,
+                    fontSize: { xs: '0.8rem', sm: '0.85rem' },
+                    boxShadow: '0 2px 8px rgba(244, 67, 54, 0.3)',
+                    letterSpacing: '0.5px'
+                  }}>
+                    {systemStatus.apiService}
+                  </Box>
+                </Box>
+
+                {/* Data Refresh */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center', 
+                  p: 1.5,
+                  bgcolor: 'white',
+                  borderRadius: 2,
+                  border: '1px solid rgba(0,0,0,0.05)',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    bgcolor: '#e3f2fd',
+                    borderColor: '#2196f3',
+                    transform: 'translateX(4px)',
+                    boxShadow: '0 2px 8px rgba(33, 150, 243, 0.15)'
+                  }
+                }}>
+                  <Stack direction="row" alignItems="center" spacing={1.5}>
+                    <Box sx={{ 
+                      width: 10, 
+                      height: 10, 
+                      borderRadius: '50%', 
+                      bgcolor: '#2196f3',
+                      boxShadow: '0 0 8px rgba(33, 150, 243, 0.5)',
+                      animation: 'pulse 2s infinite'
+                    }} />
+                    <Typography sx={{ 
+                      fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                      fontWeight: 500,
+                      color: '#1a1a1a'
+                    }}>
+                      Data Refresh
+                    </Typography>
+                  </Stack>
+                  <Box sx={{ 
+                    bgcolor: '#2196f3',
+                    color: 'white',
+                    px: 2,
+                    py: 0.6,
+                    borderRadius: 2,
+                    fontWeight: 700,
+                    fontSize: { xs: '0.8rem', sm: '0.85rem' },
+                    boxShadow: '0 2px 8px rgba(33, 150, 243, 0.3)',
+                    letterSpacing: '0.5px'
+                  }}>
+                    {systemStatus.dataRefresh}
+                  </Box>
+                </Box>
+
+                {/* Map Overlay */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center', 
+                  p: 1.5,
+                  bgcolor: 'white',
+                  borderRadius: 2,
+                  border: '1px solid rgba(0,0,0,0.05)',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    bgcolor: '#e3f2fd',
+                    borderColor: '#2196f3',
+                    transform: 'translateX(4px)',
+                    boxShadow: '0 2px 8px rgba(33, 150, 243, 0.15)'
+                  }
+                }}>
+                  <Stack direction="row" alignItems="center" spacing={1.5}>
+                    <Box sx={{ 
+                      width: 10, 
+                      height: 10, 
+                      borderRadius: '50%', 
+                      bgcolor: '#2196f3',
+                      boxShadow: '0 0 8px rgba(33, 150, 243, 0.5)'
+                    }} />
+                    <Typography sx={{ 
+                      fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                      fontWeight: 500,
+                      color: '#1a1a1a'
+                    }}>
+                      Map Overlay
+                    </Typography>
+                  </Stack>
+                  <Box sx={{ 
+                    bgcolor: '#2196f3',
+                    color: 'white',
+                    px: 2,
+                    py: 0.6,
+                    borderRadius: 2,
+                    fontWeight: 700,
+                    fontSize: { xs: '0.8rem', sm: '0.85rem' },
+                    boxShadow: '0 2px 8px rgba(33, 150, 243, 0.3)',
+                    letterSpacing: '0.5px'
+                  }}>
+                    {systemStatus.mapOverlay}
+                  </Box>
+                </Box>
+
+                {/* Optimization AI */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center', 
+                  p: 1.5,
+                  bgcolor: 'white',
+                  borderRadius: 2,
+                  border: '1px solid rgba(0,0,0,0.05)',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    bgcolor: '#f5f5f5',
+                    borderColor: '#9e9e9e',
+                    transform: 'translateX(4px)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
+                  }
+                }}>
+                  <Stack direction="row" alignItems="center" spacing={1.5}>
+                    <Box sx={{ 
+                      width: 10, 
+                      height: 10, 
+                      borderRadius: '50%', 
+                      bgcolor: '#9e9e9e'
+                    }} />
+                    <Typography sx={{ 
+                      fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                      fontWeight: 500,
+                      color: '#1a1a1a'
+                    }}>
+                      Optimization AI
+                    </Typography>
+                  </Stack>
+                  <Box sx={{ 
+                    bgcolor: '#9e9e9e',
+                    color: 'white',
+                    px: 2,
+                    py: 0.6,
+                    borderRadius: 2,
+                    fontWeight: 700,
+                    fontSize: { xs: '0.8rem', sm: '0.85rem' },
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                    letterSpacing: '0.5px'
+                  }}>
+                    {systemStatus.optimizationAI}
+                  </Box>
+                </Box>
+              </Stack>
+            </Box>
+          </Box>
+        </Stack>
       </Paper>
 
       {/* ARIA live region for announcements */}
@@ -561,8 +1422,106 @@ function SwarmMap(props, ref) {
       </Snackbar>
 
       {/* Footer */}
-      <Box className="app-footer" component="footer" role="contentinfo">
-        <Typography variant="body2">Traffic Track • v0.1.0 • © {new Date().getFullYear()} Traffic Track</Typography>
+      <Box 
+        component="footer" 
+        role="contentinfo"
+        sx={{ 
+          mt: 3,
+          background: 'linear-gradient(120deg, #4a6fa5, #166088)',
+          borderRadius: 3,
+          padding: '20px',
+          boxShadow: '0 5px 15px rgba(0,0,0,0.15)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          color: 'white',
+          flexWrap: { xs: 'wrap', md: 'nowrap' },
+          gap: 2
+        }}
+      >
+        {/* Left Section - Brand */}
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <Box sx={{ 
+            bgcolor: 'rgba(255,255,255,0.2)', 
+            borderRadius: '50%', 
+            p: 0.8,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <TrafficIcon sx={{ fontSize: 24, color: 'white' }} />
+          </Box>
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1.1rem', lineHeight: 1.2 }}>
+              Traffic Grid Dashboard
+            </Typography>
+            <Typography variant="caption" sx={{ fontSize: '0.75rem', opacity: 0.9 }}>
+              Intelligent Traffic Management • v1.0.0
+            </Typography>
+          </Box>
+        </Stack>
+
+        {/* Center Section - Links */}
+        <Stack 
+          direction="row" 
+          spacing={3} 
+          sx={{ 
+            display: { xs: 'none', sm: 'flex' }
+          }}
+        >
+          <Typography 
+            variant="body2" 
+            component="a" 
+            href="#" 
+            sx={{ 
+              color: 'white',
+              textDecoration: 'none',
+              fontSize: '0.9rem',
+              transition: 'opacity 0.2s',
+              '&:hover': { opacity: 0.8, textDecoration: 'underline' }
+            }}
+          >
+            Privacy
+          </Typography>
+          <Typography 
+            variant="body2" 
+            component="a" 
+            href="#" 
+            sx={{ 
+              color: 'white',
+              textDecoration: 'none',
+              fontSize: '0.9rem',
+              transition: 'opacity 0.2s',
+              '&:hover': { opacity: 0.8, textDecoration: 'underline' }
+            }}
+          >
+            Terms
+          </Typography>
+          <Typography 
+            variant="body2" 
+            component="a" 
+            href="#" 
+            sx={{ 
+              color: 'white',
+              textDecoration: 'none',
+              fontSize: '0.9rem',
+              transition: 'opacity 0.2s',
+              '&:hover': { opacity: 0.8, textDecoration: 'underline' }
+            }}
+          >
+            Contact
+          </Typography>
+        </Stack>
+
+        {/* Right Section - Copyright */}
+        <Box sx={{ textAlign: { xs: 'left', md: 'right' } }}>
+          <Typography variant="body2" sx={{ fontSize: '0.9rem', fontWeight: 600 }}>
+            © {new Date().getFullYear()} Traffic Track
+          </Typography>
+          <Typography variant="caption" sx={{ fontSize: '0.8rem', opacity: 0.9 }}>
+            All Rights Reserved
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );
