@@ -390,55 +390,52 @@ function SwarmMap(props, ref) {
       sx={{ 
         position: 'fixed', 
         zIndex: 1400, 
-        right: { xs: 12, sm: 24 }, 
+        right: { xs: 8, sm: 24 }, 
+        left: { xs: 8, sm: 'auto' },
         top: { xs: 'auto', sm: 96 }, 
         bottom: { xs: 96, sm: 'auto' }, 
-        minWidth: { xs: '88%', sm: 260 }, 
-        width: { xs: '88%', sm: 'auto' }, 
-        borderRadius: 3,
+        width: { xs: 'calc(100% - 16px)', sm: 260 }, 
+        maxWidth: { xs: '100%', sm: 260 },
+        borderRadius: { xs: 2, sm: 3 },
         overflow: 'hidden',
         border: '1px solid rgba(0,0,0,0.08)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
         pointerEvents: 'auto',
-        background: 'white'
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(8px)'
       }}
     >
       {/* Header Section */}
       <Box sx={{ 
         background: 'linear-gradient(135deg, #4a6fa5 0%, #166088 100%)',
-        p: 2,
+        p: { xs: 1, sm: 1.5 },
         color: 'white'
       }}>
         <Stack direction="row" spacing={1} alignItems="center">
           <Box sx={{ 
             bgcolor: 'rgba(255,255,255,0.2)',
             borderRadius: 1.5,
-            p: 0.8,
+            p: { xs: 0.6, sm: 0.8 },
             display: 'flex'
           }}>
-            <InfoIcon sx={{ fontSize: 20 }} />
+            <InfoIcon sx={{ fontSize: { xs: 18, sm: 20 } }} />
           </Box>
-          <Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: '1rem' }}>
-              Grid Status
-            </Typography>
-            <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.7rem' }}>
-              Real-time metrics
-            </Typography>
-          </Box>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: { xs: '0.85rem', sm: '0.95rem' } }}>
+            Grid Status
+          </Typography>
         </Stack>
       </Box>
 
       {/* Metrics Section */}
-      <Box sx={{ p: 2, bgcolor: '#fafbfc' }}>
-        <Stack spacing={1.5}>
+      <Box sx={{ p: { xs: 0.8, sm: 1 }, bgcolor: '#fafbfc' }}>
+        <Stack spacing={{ xs: 0.6, sm: 0.8 }}>
           <Box sx={{ 
             display: 'flex', 
             justifyContent: 'space-between',
             alignItems: 'center',
-            p: 1.5,
+            p: { xs: 0.6, sm: 0.8 },
             bgcolor: 'white',
-            borderRadius: 1.5,
+            borderRadius: 1,
             border: '1px solid rgba(0,0,0,0.06)',
             transition: 'all 0.2s',
             '&:hover': {
@@ -446,17 +443,18 @@ function SwarmMap(props, ref) {
               transform: 'translateY(-1px)'
             }
           }}>
-            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: '0.85rem' }}>
+            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: { xs: '0.7rem', sm: '0.8rem' }, flex: 1 }}>
               ⏱️ Avg. Delay
             </Typography>
             <Box sx={{ 
               bgcolor: '#e8f4ff',
               color: '#4a6fa5',
-              px: 1.5,
-              py: 0.5,
+              px: { xs: 1, sm: 1.5 },
+              py: { xs: 0.3, sm: 0.5 },
               borderRadius: 1,
               fontWeight: 700,
-              fontSize: '0.9rem'
+              fontSize: { xs: '0.75rem', sm: '0.9rem' },
+              whiteSpace: 'nowrap'
             }}>
               {overlayMetrics.delay.toFixed(1)} s/veh
             </Box>
@@ -466,9 +464,9 @@ function SwarmMap(props, ref) {
             display: 'flex', 
             justifyContent: 'space-between',
             alignItems: 'center',
-            p: 1.5,
+            p: { xs: 0.6, sm: 0.8 },
             bgcolor: 'white',
-            borderRadius: 1.5,
+            borderRadius: 1,
             border: '1px solid rgba(0,0,0,0.06)',
             transition: 'all 0.2s',
             '&:hover': {
@@ -476,17 +474,18 @@ function SwarmMap(props, ref) {
               transform: 'translateY(-1px)'
             }
           }}>
-            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: '0.85rem' }}>
+            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: { xs: '0.7rem', sm: '0.8rem' }, flex: 1 }}>
               🚗 Avg. Queue
             </Typography>
             <Box sx={{ 
               bgcolor: '#fff7ed',
               color: '#ea580c',
-              px: 1.5,
-              py: 0.5,
+              px: { xs: 1, sm: 1.5 },
+              py: { xs: 0.3, sm: 0.5 },
               borderRadius: 1,
               fontWeight: 700,
-              fontSize: '0.9rem'
+              fontSize: { xs: '0.75rem', sm: '0.9rem' },
+              whiteSpace: 'nowrap'
             }}>
               {overlayMetrics.queue.toFixed(1)} veh
             </Box>
@@ -496,9 +495,9 @@ function SwarmMap(props, ref) {
             display: 'flex', 
             justifyContent: 'space-between',
             alignItems: 'center',
-            p: 1.5,
+            p: { xs: 0.6, sm: 0.8 },
             bgcolor: 'white',
-            borderRadius: 1.5,
+            borderRadius: 1,
             border: '1px solid rgba(0,0,0,0.06)',
             transition: 'all 0.2s',
             '&:hover': {
@@ -506,17 +505,18 @@ function SwarmMap(props, ref) {
               transform: 'translateY(-1px)'
             }
           }}>
-            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: '0.85rem' }}>
+            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: { xs: '0.7rem', sm: '0.8rem' }, flex: 1 }}>
               📊 Throughput
             </Typography>
             <Box sx={{ 
               bgcolor: '#f0fdf4',
               color: '#16a34a',
-              px: 1.5,
-              py: 0.5,
+              px: { xs: 1, sm: 1.5 },
+              py: { xs: 0.3, sm: 0.5 },
               borderRadius: 1,
               fontWeight: 700,
-              fontSize: '0.9rem'
+              fontSize: { xs: '0.75rem', sm: '0.9rem' },
+              whiteSpace: 'nowrap'
             }}>
               {overlayMetrics.throughput} veh/hr
             </Box>
@@ -526,9 +526,9 @@ function SwarmMap(props, ref) {
             display: 'flex', 
             justifyContent: 'space-between',
             alignItems: 'center',
-            p: 1.5,
+            p: { xs: 0.6, sm: 0.8 },
             bgcolor: 'white',
-            borderRadius: 1.5,
+            borderRadius: 1,
             border: '1px solid rgba(0,0,0,0.06)',
             transition: 'all 0.2s',
             '&:hover': {
@@ -536,17 +536,18 @@ function SwarmMap(props, ref) {
               transform: 'translateY(-1px)'
             }
           }}>
-            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: '0.85rem' }}>
+            <Typography variant="body2" sx={{ color: '#475569', fontWeight: 500, fontSize: { xs: '0.7rem', sm: '0.8rem' }, flex: 1 }}>
               📈 Improvement
             </Typography>
             <Box sx={{ 
               bgcolor: '#f0f9ff',
               color: '#0284c7',
-              px: 1.5,
-              py: 0.5,
+              px: { xs: 1, sm: 1.5 },
+              py: { xs: 0.3, sm: 0.5 },
               borderRadius: 1,
               fontWeight: 700,
-              fontSize: '0.9rem'
+              fontSize: { xs: '0.75rem', sm: '0.9rem' },
+              whiteSpace: 'nowrap'
             }}>
               {overlayMetrics.improvement.toFixed(1)}%
             </Box>
@@ -554,57 +555,55 @@ function SwarmMap(props, ref) {
         </Stack>
       </Box>
 
-      {/* Legend Section */}
+      {/* Legend Section - Hidden to reduce height */}
       <Box sx={{ 
-        p: 2, 
-        bgcolor: 'white',
-        borderTop: '1px solid rgba(0,0,0,0.06)'
+        display: 'none'
       }}>
         <Typography variant="caption" sx={{ 
           color: '#64748b', 
           fontWeight: 600, 
           textTransform: 'uppercase',
-          fontSize: '0.7rem',
+          fontSize: { xs: '0.65rem', sm: '0.7rem' },
           letterSpacing: 0.5,
           mb: 1,
           display: 'block'
         }}>
           Traffic Density
         </Typography>
-        <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-around">
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+        <Stack direction="row" spacing={{ xs: 1, sm: 2 }} alignItems="center" justifyContent="space-around">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 0.8 } }}>
             <Box sx={{ 
-              width: 18, 
-              height: 18, 
+              width: { xs: 14, sm: 18 }, 
+              height: { xs: 14, sm: 18 }, 
               bgcolor: '#4fc6e0', 
               borderRadius: 1,
               boxShadow: '0 2px 4px rgba(79, 198, 224, 0.3)'
             }} />
-            <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569', fontSize: '0.75rem' }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569', fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
               Low
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 0.8 } }}>
             <Box sx={{ 
-              width: 18, 
-              height: 18, 
+              width: { xs: 14, sm: 18 }, 
+              height: { xs: 14, sm: 18 }, 
               bgcolor: '#f9d64f', 
               borderRadius: 1,
               boxShadow: '0 2px 4px rgba(249, 214, 79, 0.3)'
             }} />
-            <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569', fontSize: '0.75rem' }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569', fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
               Med
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 0.8 } }}>
             <Box sx={{ 
-              width: 18, 
-              height: 18, 
+              width: { xs: 14, sm: 18 }, 
+              height: { xs: 14, sm: 18 }, 
               bgcolor: '#f97c4f', 
               borderRadius: 1,
               boxShadow: '0 2px 4px rgba(249, 124, 79, 0.3)'
             }} />
-            <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569', fontSize: '0.75rem' }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: '#475569', fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
               High
             </Typography>
           </Box>
