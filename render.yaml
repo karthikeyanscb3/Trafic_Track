@@ -2,11 +2,9 @@ services:
   # Backend Service
   - type: web
     name: trafictrack-backend
-    runtime: java
+    env: docker
     plan: starter
     rootDir: backend
-    buildCommand: mvn clean package
-    startCommand: java -jar target/trafic-track-backend-0.0.1-SNAPSHOT.jar
     envVars:
       - key: SPRING_DATASOURCE_URL
         sync: false
@@ -16,7 +14,7 @@ services:
         sync: false
       - key: APP_ENC_KEY
         value: /O57NYDzbL6ML5Hinm/PrHEFjPjOSl9yxaQQ87rZ42k=
-      - key: SERVER_PORT
+      - key: PORT
         value: 8081
 
   # Frontend Service
