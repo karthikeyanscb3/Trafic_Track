@@ -3,7 +3,7 @@ services:
   - type: web
     name: trafictrack-backend
     env: docker
-    plan: starter
+    plan: free
     rootDir: backend
     envVars:
       - key: SPRING_DATASOURCE_URL
@@ -21,7 +21,7 @@ services:
   - type: web
     name: trafictrack-frontend
     runtime: node
-    plan: starter
+    plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
     startCommand: npx serve -s build -l 3000
