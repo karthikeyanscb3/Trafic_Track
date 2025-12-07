@@ -1,5 +1,7 @@
-export const API_ORIGIN = process.env.REACT_APP_API_BASE || 'http://localhost:8081';
-const BASE = `${API_ORIGIN}/api`;
+import { API_ORIGIN, API_BASE } from '../config/api';
+
+export { API_ORIGIN };
+const BASE = API_BASE;
 
 export async function fetchSwarmData() {
   try {

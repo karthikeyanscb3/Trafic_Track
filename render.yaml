@@ -27,7 +27,4 @@ services:
     startCommand: npx serve -s build -l 3000
     envVars:
       - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: trafictrack-backend
-          envVarKey: RENDER_EXTERNAL_URL
+        value: https://trafictrack-backend.onrender.com

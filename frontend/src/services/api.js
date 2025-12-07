@@ -1,5 +1,4 @@
-const API_ORIGIN = process.env.REACT_APP_API_BASE || 'http://localhost:8081';
-const API_BASE = `${API_ORIGIN}/api`;
+import { API_BASE } from '../config/api';
 
 export async function fetchVehicles() {
   try {
