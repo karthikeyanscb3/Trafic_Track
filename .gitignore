@@ -1,0 +1,18 @@
+# Java
+target/
+*.class
+*.jar
+*.war
+*.iml
+
+# Maven
+.mvn/
+
+# Node
+node_modules/
+build/
+.env
+
+# IDE
+.vscode/
+.idea/

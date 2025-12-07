@@ -1,0 +1,108 @@
+:root {
+    --primary: #4a6fa5; --primary-dark: #3a5a85; --secondary: #166088; --accent: #4fc6e0;
+    --accent-light: #7fd8ec; --background: #f5f7fa; --card-bg: #ffffff; --text: #333;
+    --light-text: #666; --border: #e0e6ed; --success: #4CAF50; --warning: #FFC107; --danger: #F44336;
+}
+.swarm-dashboard * { box-sizing: border-box; }
+/* remove default page whitespace so the component sits at the very top */
+html, body, #root { height: 100%; margin: 0; padding: 0; }
+.swarm-dashboard { font-family: 'Roboto', sans-serif; min-height: 100vh; margin: 0; padding: 0; }
+.dashboard {
+    max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 300px 1fr; grid-template-rows: auto 1fr auto; grid-template-areas: "header header" "controls visualization" "metrics metrics"; gap: 20px; padding: 0;
+}
+.header { grid-area: header; background: linear-gradient(120deg, var(--primary), var(--secondary)); border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center; color: white; }
+.header h1 { font-weight: 700; font-size: 20px; }
+.controls-panel { grid-area: controls; background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); display: flex; flex-direction: column; gap: 20px; }
+.visualization-panel { grid-area: visualization; display: grid; grid-template-rows: auto 1fr; gap: 20px; }
+.map-container { background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: 500px; position: relative; overflow: hidden; }
+.map-container { background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
+#swarm-map { height: calc(100vh - 40px); border-radius: 8px; background: #e8f4fd; }
+.map-overlay { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.95); border-radius: 8px; padding: 15px; z-index: 1000; box-shadow: 0 3px 10px rgba(0,0,0,0.1); max-width: 280px; }
+.chart-container { background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); height: 300px; }
+.metrics-panel { grid-area: metrics; background: var(--card-bg); border-radius: 12px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+.status-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.status-box { background: var(--card-bg); border-radius: 8px; padding: 15px; max-height: 250px; overflow-y: auto; }
+.status-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 14px; }
+.status-item:last-child { border-bottom: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 13px; }
+.legend-color { width: 16px; height: 16px; border-radius: 3px; }
+.road-low { background: #4fc6e0; } .road-medium { background: #f9d64f; } .road-high { background: #f97c4f; }
+
+/* style the small scrollbar inside the traffic light list to visually appear between columns */
+.status-container > div:first-child { overflow-y: auto; }
+.status-container > div:first-child::-webkit-scrollbar { width: 10px; }
+.status-container > div:first-child::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 8px; }
+.status-container > div:first-child::-webkit-scrollbar-track { background: transparent; }
+
+/* footer styles */
+.app-footer { margin-top: 16px; padding: 10px 16px; text-align: center; color: #6b7280; font-size: 13px; border-top: 1px solid rgba(0,0,0,0.04); background: transparent; }
+.app-footer a { color: inherit; text-decoration: underline; }
+
+/* vertical header used in bottom panel */
+.vertical-header span { display: block; font-size: 14px; }
+.vertical-header { transform: rotate(0deg); }
+
+@media (max-width: 900px) {
+    .vertical-header span { font-size: 13px; }
+}
+
+/* traffic list scrollbar and timer badge */
+.bottom-traffic-list { max-height: 220px; overflow-y: auto; }
+.bottom-traffic-list::-webkit-scrollbar { width: 10px; }
+.bottom-traffic-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 8px; }
+.traffic-timer-badge { background: rgba(13,110,253,0.08); color: #0d6efd; padding: 4px 8px; border-radius: 999px; font-weight: 600; font-size: 13px; }
+
+.visually-hidden { position: absolute !important; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px); white-space: nowrap; border: 0; padding: 0; margin: -1px; }
+
+/* small responsive tweaks */
+@media (max-width: 1100px) { .dashboard { grid-template-columns: 1fr; grid-template-areas: "header" "controls" "visualization" "metrics"; } }
+
+/* Accessibility: clear focus outlines for keyboard users */
+button:focus-visible, .MuiIconButton-root:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, .MuiSlider-thumb:focus-visible {
+        outline: 3px solid rgba(25,118,210,0.35);
+        outline-offset: 2px;
+        border-radius: 6px;
+}
+
+/* Make map container and overlays responsive */
+.map-container .map-overlay { max-width: 90%; }
+
+/* Ensure Grid Status overlay is visible above Leaflet map panes */
+.grid-status-overlay { z-index: 1400 !important; pointer-events: auto; }
+
+/* Ensure controls become full width on small screens */
+@media (max-width: 700px) {
+    .controls-panel { width: 100% !important; }
+    .map-container { padding: 12px; }
+}
+
+/* Improve contrast on interactive elements */
+.MuiButton-containedPrimary { box-shadow: none; }
+
+/* Mobile / small-screen adjustments */
+@media (max-width: 700px) {
+    /* make the top-level padding smaller and stack content */
+    .swarm-dashboard { padding: 8px; }
+    /* controls panel should take full width when visible */
+    .swarm-dashboard .MuiPaper-root { box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+    /* make Grid Status wider and positioned near bottom center */
+    .grid-status-overlay { right: 6% !important; left: 6% !important; top: auto !important; bottom: 88px !important; max-width: 88% !important; }
+    /* reduce footer footprint */
+    .app-footer { font-size: 12px; padding: 8px; }
+    /* make vertical header compact */
+    .vertical-header { display: none; }
+    /* traffic badge smaller */
+    .traffic-timer-badge { font-size: 12px; padding: 3px 6px; }
+}
+
+@media (max-width: 420px) {
+    .swarm-dashboard { padding: 6px; }
+    .grid-status-overlay { bottom: 72px !important; left: 4% !important; right: 4% !important; }
+    /* ensure map fills most of the screen - handled inline but give extra safety */
+    div[role='application'] { height: calc(60vh) !important; }
+}
+
+/* small utility to visually emphasize the mobile menu toggle */
+.swarm-dashboard .MuiIconButton-root[aria-label='Open controls'] { border-radius: 10px; }
+
