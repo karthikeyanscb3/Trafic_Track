@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import Chart from 'chart.js/auto';
 import './SwarmMap.css';
 import { fetchSwarmData, API_ORIGIN } from '../services/swarmApi';
+import { fetchGridTrafficData, transformGridDataToIntersections, getCongestionColor, getRoadColor, setupAutoRefresh } from '../services/trafficService';
 import { Box, Button, Slider, TextField, Select, MenuItem, Typography, Paper, Stack, IconButton, Snackbar, Alert } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
@@ -46,6 +47,11 @@ function SwarmMap(props, ref) {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   // mobile/small-screen controls toggle
   const [showControlsMobile, setShowControlsMobile] = useState(false);
+  // Live traffic data state
+  const [useLiveData, setUseLiveData] = useState(false);
+  const [liveDataStatus, setLiveDataStatus] = useState('Not Active');
+  const [lastDataUpdate, setLastDataUpdate] = useState(null);
+  const autoRefreshRef = useRef(null);
 
   function showSnackbar(message, severity = 'success') {
     setSnackbarMsg(message);
@@ -137,24 +143,73 @@ function SwarmMap(props, ref) {
   function generateSwarmAgents(center, radius) { const a=[]; const ac = parseInt(simRefs.current.swarmSize || 20,10); for(let i=0;i<ac;i++){ const lat = center.lat + (Math.random()*radius - radius/2)*0.8; const lng = center.lng + (Math.random()*radius - radius/2)*0.8; const ag = L.marker([lat,lng],{icon:L.divIcon({className:'swarm-marker',html:`<div style="background-color:#FF5722; width:12px; height:12px; border-radius:50%; border:2px solid white;"></div>`,iconSize:[16,16]})}).addTo(objectsRef.current.map); a.push(ag);} return a; }
 
   // core draw function using React state updates instead of DOM writes
-  const drawTrafficVisualization = useCallback((center, radius) => {
+  const drawTrafficVisualization = useCallback(async (center, radius, forceLive = false) => {
     const o = objectsRef.current;
     // clear old
     [...o.trafficMarkers, ...o.swarmMarkers, ...o.roadLayers, ...o.vehicles.map(v=>v.marker)].forEach(layer => { try { o.map.removeLayer(layer); } catch(e) {} });
     o.trafficMarkers = []; o.swarmMarkers = []; o.roadLayers = []; o.vehicles = [];
 
-    const intersections = generateGridIntersections(center, radius);
-    const generatedRoads = generateGridRoads(intersections);
+    let intersections = generateGridIntersections(center, radius);
+    let generatedRoads = generateGridRoads(intersections);
 
-    generatedRoads.forEach(road => { const color = road.congestion < 0.4 ? '#4fc6e0' : road.congestion < 0.6 ? '#f9d64f' : '#f97c4f'; const polyline = L.polyline([road.start, road.end], { color, weight: 4 + road.congestion * 8, opacity: 0.8 }).addTo(o.map); polyline.roadData = road; o.roadLayers.push(polyline); });
-    intersections.forEach(inter => { const fillColor = inter.congestion < 0.4 ? '#4CAF50' : inter.congestion < 0.6 ? '#FFC107' : '#F44336'; const marker = L.circleMarker([inter.lat, inter.lng], { radius: 8, color: '#166088', fillColor, fillOpacity: 0.9, weight: 1 }).addTo(o.map); marker.intersectionData = inter; marker.bindPopup(`<b>${inter.name}</b><br>Grid: ${inter.gridX},${inter.gridY}<br>Congestion: ${Math.round(inter.congestion * 100)}%`); o.trafficMarkers.push(marker); });
+    // Fetch live traffic data if enabled
+    if (useLiveData || forceLive) {
+      try {
+        setLiveDataStatus('Fetching...');
+        const gridData = await fetchGridTrafficData(center.lat, center.lng, radius, GRID_SIZE);
+        
+        if (gridData && gridData.points) {
+          // Update intersections with live data
+          intersections = transformGridDataToIntersections(gridData, intersections);
+          
+          // Update roads based on connected intersection congestion
+          generatedRoads = generatedRoads.map(road => {
+            const startInter = intersections.find(i => 
+              Math.abs(i.lat - road.start[0]) < 0.0001 && Math.abs(i.lng - road.start[1]) < 0.0001
+            );
+            const endInter = intersections.find(i => 
+              Math.abs(i.lat - road.end[0]) < 0.0001 && Math.abs(i.lng - road.end[1]) < 0.0001
+            );
+            
+            if (startInter && endInter) {
+              const avgCongestion = (startInter.congestion + endInter.congestion) / 2;
+              return { ...road, congestion: avgCongestion };
+            }
+            return road;
+          });
+          
+          setLiveDataStatus('Active');
+          setLastDataUpdate(new Date().toLocaleTimeString());
+          showSnackbar('Live traffic data loaded successfully', 'success');
+        } else {
+          setLiveDataStatus('Failed - Using Static Data');
+          showSnackbar('Failed to fetch live data. Using static data.', 'warning');
+        }
+      } catch (error) {
+        console.error('Error fetching live traffic data:', error);
+        setLiveDataStatus('Error - Using Static Data');
+        showSnackbar('Error fetching live data. Using static data.', 'error');
+      }
+    } else {
+      setLiveDataStatus('Not Active');
+    }
+
+    generatedRoads.forEach(road => { const color = getRoadColor(road.congestion); const polyline = L.polyline([road.start, road.end], { color, weight: 4 + road.congestion * 8, opacity: 0.8 }).addTo(o.map); polyline.roadData = road; o.roadLayers.push(polyline); });
+    intersections.forEach(inter => { 
+      const fillColor = getCongestionColor(inter.congestion);
+      const marker = L.circleMarker([inter.lat, inter.lng], { radius: 8, color: '#166088', fillColor, fillOpacity: 0.9, weight: 1 }).addTo(o.map); 
+      marker.intersectionData = inter; 
+      const dataSourceBadge = inter.isLiveData ? '<span style="color:#4CAF50;">●</span> LIVE' : '<span style="color:#999;">●</span> Static';
+      marker.bindPopup(`<b>${inter.name}</b><br>Grid: ${inter.gridX},${inter.gridY}<br>Congestion: ${Math.round(inter.congestion * 100)}%<br>${dataSourceBadge}`); 
+      o.trafficMarkers.push(marker); 
+    });
 
     o.vehicles = generateVehicles(generatedRoads);
     o.swarmMarkers = generateSwarmAgents(center, radius);
 
     // update traffic light list state
     setTrafficLights(intersections.map(i => ({ name: i.name, timeRemaining: i.timeRemaining })));
-  }, [generateGridIntersections, generateGridRoads]);
+  }, [generateGridIntersections, generateGridRoads, useLiveData]);
 
   // expose imperative handle for search from parent header
   useImperativeHandle(ref, () => ({
@@ -286,6 +341,25 @@ function SwarmMap(props, ref) {
 
   // initial draw
   useEffect(() => { if (objectsRef.current.map) drawTrafficVisualization(objectsRef.current.map.getCenter(), 0.05); }, [drawTrafficVisualization]);
+
+  // Setup auto-refresh when live data is enabled
+  useEffect(() => {
+    if (useLiveData && objectsRef.current.map) {
+      const refreshFunction = () => {
+        const center = objectsRef.current.map.getCenter();
+        drawTrafficVisualization(center, 0.05, true);
+      };
+      
+      // Auto-refresh every 5 minutes (300000ms)
+      autoRefreshRef.current = setupAutoRefresh(refreshFunction, 300000);
+      
+      return () => {
+        if (autoRefreshRef.current) {
+          autoRefreshRef.current.stop();
+        }
+      };
+    }
+  }, [useLiveData, drawTrafficVisualization]);
 
   // load latest saved API credential (masked) from backend
   useEffect(() => {
@@ -800,7 +874,7 @@ function SwarmMap(props, ref) {
                 onChange={e => setMapType(e.target.value)} 
                 size="small" 
                 sx={{ 
-                  mb: 0.5,
+                  mb: 1.5,
                   bgcolor: 'white',
                   '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,0,0,0.1)' },
                   '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#4a6fa5' },
@@ -812,6 +886,66 @@ function SwarmMap(props, ref) {
                 <MenuItem value="satellite">🛰️ Satellite</MenuItem>
                 <MenuItem value="dark">🌙 Dark Mode</MenuItem>
               </Select>
+              
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: '#1e293b', fontSize: '0.85rem' }}>
+                Traffic Data Source
+              </Typography>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
+                <Button
+                  variant={useLiveData ? "contained" : "outlined"}
+                  onClick={() => {
+                    const newValue = !useLiveData;
+                    setUseLiveData(newValue);
+                    if (newValue && objectsRef.current.map) {
+                      const center = objectsRef.current.map.getCenter();
+                      drawTrafficVisualization(center, 0.05, true);
+                    }
+                  }}
+                  size="small"
+                  sx={{
+                    flex: 1,
+                    bgcolor: useLiveData ? '#22c55e' : 'transparent',
+                    color: useLiveData ? 'white' : '#22c55e',
+                    borderColor: '#22c55e',
+                    '&:hover': { 
+                      bgcolor: useLiveData ? '#16a34a' : 'rgba(34, 197, 94, 0.1)',
+                      borderColor: '#16a34a'
+                    },
+                    textTransform: 'none',
+                    fontWeight: 600
+                  }}
+                >
+                  🟢 Live Data
+                </Button>
+                <Button
+                  variant={!useLiveData ? "contained" : "outlined"}
+                  onClick={() => {
+                    setUseLiveData(false);
+                    if (autoRefreshRef.current) {
+                      autoRefreshRef.current.stop();
+                    }
+                  }}
+                  size="small"
+                  sx={{
+                    flex: 1,
+                    bgcolor: !useLiveData ? '#6b7280' : 'transparent',
+                    color: !useLiveData ? 'white' : '#6b7280',
+                    borderColor: '#6b7280',
+                    '&:hover': { 
+                      bgcolor: !useLiveData ? '#4b5563' : 'rgba(107, 114, 128, 0.1)',
+                      borderColor: '#4b5563'
+                    },
+                    textTransform: 'none',
+                    fontWeight: 600
+                  }}
+                >
+                  ⚪ Static
+                </Button>
+              </Stack>
+              <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.75rem', display: 'block', mt: 0.5 }}>
+                Status: <strong style={{ color: useLiveData ? '#22c55e' : '#6b7280' }}>{liveDataStatus}</strong>
+                {lastDataUpdate && <span> • Updated: {lastDataUpdate}</span>}
+              </Typography>
             </Box>
 
             {/* Simulation Settings Section */}
