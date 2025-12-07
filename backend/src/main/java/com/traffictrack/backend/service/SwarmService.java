@@ -1,5 +1,7 @@
 package com.traffictrack.backend.service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +19,12 @@ import com.traffictrack.backend.repository.RoadRepository;
 public class SwarmService {
 
     private static final int GRID_SIZE = 9;
+    private static final Duration CACHE_DURATION = Duration.ofMinutes(10);
     private final IntersectionRepository intersectionRepository;
     private final RoadRepository roadRepository;
+    private volatile Map<String, Object> cachedResponse;
+    private volatile Instant cacheTimestamp = Instant.EPOCH;
+    private final Object cacheLock = new Object();
 
     public SwarmService(IntersectionRepository intersectionRepository, RoadRepository roadRepository) {
         this.intersectionRepository = intersectionRepository;
@@ -30,10 +36,27 @@ public class SwarmService {
      */
     @Transactional
     public Map<String, Object> getSwarmData() {
+        Map<String, Object> snapshot = cachedResponse;
+        if (snapshot != null && Duration.between(cacheTimestamp, Instant.now()).compareTo(CACHE_DURATION) < 0) {
+            return snapshot;
+        }
+
+        synchronized (cacheLock) {
+            if (cachedResponse != null && Duration.between(cacheTimestamp, Instant.now()).compareTo(CACHE_DURATION) < 0) {
+                return cachedResponse;
+            }
+
+            Map<String, Object> fresh = fetchSwarmData();
+            cachedResponse = fresh;
+            cacheTimestamp = Instant.now();
+            return fresh;
+        }
+    }
+
+    private Map<String, Object> fetchSwarmData() {
         List<Intersection> intersections = intersectionRepository.findAll();
         List<Road> roads = roadRepository.findAll();
 
-        // If no data in database, initialize with default data
         if (intersections.isEmpty() && roads.isEmpty()) {
             return initializeDefaultData();
         }
